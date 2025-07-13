@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -243,6 +244,26 @@ async def get_file_info(file_id: str):
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Mount static files for frontend
+static_dir = Path("../frontend/build")
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=static_dir / "static"), name="static")
+    
+    # Serve React app for all non-API routes
+    from fastapi.responses import FileResponse
+    
+    @app.get("/")
+    async def serve_react_app():
+        return FileResponse(static_dir / "index.html")
+    
+    @app.get("/{full_path:path}")
+    async def catch_all(full_path: str):
+        # If the path doesn't start with /api, serve the React app
+        if not full_path.startswith("api"):
+            return FileResponse(static_dir / "index.html")
+        else:
+            raise HTTPException(status_code=404, detail="Not found")
 
 app.add_middleware(
     CORSMiddleware,

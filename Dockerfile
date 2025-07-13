@@ -13,11 +13,11 @@ RUN yarn install --frozen-lockfile
 # Copy frontend source code
 COPY frontend/ ./
 
-# Create .env file for build to use internal backend (hardcoded)
-RUN echo 'REACT_APP_BACKEND_URL=http://localhost:8000' > .env.production
+# Create .env file for build to use relative URLs for same-origin requests
+RUN echo 'REACT_APP_BACKEND_URL=' > .env.production
 
-# Build the React app for production with internal backend URL
-RUN REACT_APP_BACKEND_URL=http://localhost:8000 yarn build
+# Build the React app for production with relative URLs
+RUN REACT_APP_BACKEND_URL= yarn build
 
 # Main stage - Python with Node.js for running both services
 FROM python:3.11-slim
@@ -58,14 +58,8 @@ COPY <<EOF /app/start.sh
 # Set environment variables
 export PYTHONPATH=/app/backend
 
-# Start the FastAPI backend in the background
-cd /app/backend && python -m uvicorn server:app --host 0.0.0.0 --port 8000 &
-
-# Wait a moment for backend to start
-sleep 3
-
-# Start the frontend server
-cd /app/frontend && serve -s build -l 3000
+# Start the FastAPI backend
+cd /app/backend && python -m uvicorn server:app --host 0.0.0.0 --port 3000 --root-path /api
 EOF
 
 # Make the startup script executable
