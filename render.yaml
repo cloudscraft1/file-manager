@@ -1,0 +1,51 @@
+services:
+  # Main web service
+  - type: web
+    name: file-manager
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    
+    # Environment variables (you'll need to set these in Render dashboard)
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: file_manager
+      - key: APPWRITE_ENDPOINT
+        sync: false
+      - key: APPWRITE_PROJECT_ID
+        sync: false
+      - key: APPWRITE_API_KEY
+        sync: false
+      - key: APPWRITE_BUCKET_ID
+        sync: false
+      - key: NODE_ENV
+        value: production
+    
+    # Health check configuration
+    healthCheckPath: /
+    
+    # Auto-deploy configuration
+    autoDeploy: true
+    
+    # Build configuration
+    buildCommand: ""
+    startCommand: ""
+    
+    # Domain configuration (optional)
+    # domains:
+    #   - file-manager.example.com
+    
+    # Resource limits
+    disk:
+      name: file-manager-disk
+      mountPath: /app/data
+      sizeGB: 1
+
+# Preview environments for pull requests
+previewsEnabled: true
+previewsExpireAfterDays: 30
