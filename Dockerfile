@@ -13,10 +13,10 @@ RUN yarn install --frozen-lockfile
 # Copy frontend source code
 COPY frontend/ ./
 
-# Create .env file for build to use local backend
+# Create .env file for build to use internal backend (hardcoded)
 RUN echo 'REACT_APP_BACKEND_URL=http://localhost:8000' > .env.production
 
-# Build the React app for production with local backend URL
+# Build the React app for production with internal backend URL
 RUN REACT_APP_BACKEND_URL=http://localhost:8000 yarn build
 
 # Main stage - Python with Node.js for running both services
