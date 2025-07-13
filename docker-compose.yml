@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  file-manager:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Backend environment variables
+      - MONGO_URL=${MONGO_URL}
+      - DB_NAME=${DB_NAME}
+      - APPWRITE_ENDPOINT=${APPWRITE_ENDPOINT}
+      - APPWRITE_PROJECT_ID=${APPWRITE_PROJECT_ID}
+      - APPWRITE_API_KEY=${APPWRITE_API_KEY}
+      - APPWRITE_BUCKET_ID=${APPWRITE_BUCKET_ID}
+    volumes:
+      # Optional: Mount backend .env file if you have one
+      - ./backend/.env:/app/backend/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
