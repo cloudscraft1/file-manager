@@ -21,10 +21,26 @@ ROOT_DIR = Path(__file__).parent
 # Load .env file from the current directory (works both locally and in Docker)
 load_dotenv(ROOT_DIR / '.env')
 
+# Debug: Print environment variables
+print(f"Environment variables loaded:")
+print(f"MONGO_URL: {os.getenv('MONGO_URL')}")
+print(f"DB_NAME: {os.getenv('DB_NAME')}")
+print(f"APPWRITE_ENDPOINT: {os.getenv('APPWRITE_ENDPOINT')}")
+print(f"APPWRITE_PROJECT_ID: {os.getenv('APPWRITE_PROJECT_ID')}")
+print(f"APPWRITE_BUCKET_ID: {os.getenv('APPWRITE_BUCKET_ID')}")
+print(f"ENV file path: {ROOT_DIR / '.env'}")
+print(f"ENV file exists: {(ROOT_DIR / '.env').exists()}")
+
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+try:
+    mongo_url = os.environ['MONGO_URL']
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[os.environ['DB_NAME']]
+    print(f"Successfully connected to MongoDB")
+except KeyError as e:
+    print(f"Missing environment variable: {e}")
+    # Use fallback values or exit
+    raise
 
 # Appwrite configuration
 def init_appwrite() -> Storage:
