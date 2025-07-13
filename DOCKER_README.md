@@ -24,7 +24,7 @@ This setup allows you to run both the React frontend and FastAPI backend in a si
 
 3. **Access the application:**
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3000/api (proxied through frontend)
+   - Backend API: The frontend automatically connects to the backend running internally on port 8000
 
 ### Method 2: Using Docker directly
 
@@ -51,6 +51,10 @@ This setup allows you to run both the React frontend and FastAPI backend in a si
 - **Backend**: FastAPI server running on port 8000 (internal only)
 - **Communication**: Frontend configured to communicate with backend via localhost:8000
 - **Exposed Port**: Only port 3000 is exposed to the host
+
+## Important Note about Backend URL
+
+The Docker setup automatically configures the frontend to use the local backend (`http://localhost:8000`) instead of any external URL that might be configured in your local `.env` files. This is done during the Docker build process to ensure the frontend and backend communicate properly within the container.
 
 ## Environment Variables
 
