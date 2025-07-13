@@ -18,8 +18,8 @@ import io
 
 
 ROOT_DIR = Path(__file__).parent
-# Load .env file from the current directory (works both locally and in Docker)
-load_dotenv(ROOT_DIR / '.env')
+# Load .env file from the current working directory at runtime
+load_dotenv()
 
 # Debug: Print environment variables
 print(f"Environment variables loaded:")

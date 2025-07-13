@@ -55,11 +55,14 @@ COPY --from=frontend-builder /app/frontend/build ./frontend/build
 # Create a startup script
 COPY <<EOF /app/start.sh
 #!/bin/bash
+# Set environment variables
+export PYTHONPATH=/app/backend
+
 # Start the FastAPI backend in the background
-cd /app/backend && uvicorn server:app --host 0.0.0.0 --port 8000 &
+cd /app/backend && python -m uvicorn server:app --host 0.0.0.0 --port 8000 &
 
 # Wait a moment for backend to start
-sleep 2
+sleep 3
 
 # Start the frontend server
 cd /app/frontend && serve -s build -l 3000
