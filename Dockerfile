@@ -32,6 +32,9 @@ RUN apt-get update && apt-get install -y \
 # Install serve globally for serving the React build
 RUN npm install -g serve
 
+# Create a non-root user with UID 10001
+RUN groupadd -g 10001 appuser \u0026\u0026 useradd -u 10001 -g appuser -m -s /bin/bash appuser
+
 # Set working directory
 WORKDIR /app
 
@@ -48,14 +51,20 @@ COPY --from=frontend-builder /app/frontend/build ./frontend/build
 # Create a startup script
 RUN echo '#!/bin/bash\n\
 # Start the FastAPI backend in the background\n\
-cd /app/backend && uvicorn server:app --host 0.0.0.0 --port 8000 &\n\
+cd /app/backend \u0026\u0026 uvicorn server:app --host 0.0.0.0 --port 8000 \u0026\n\
 \n\
 # Wait a moment for backend to start\n\
 sleep 2\n\
 \n\
 # Start the frontend server\n\
-cd /app/frontend && serve -s build -l 3000\n\
-' > /app/start.sh && chmod +x /app/start.sh
+cd /app/frontend \u0026\u0026 serve -s build -l 3000\n\
+' > /app/start.sh \u0026\u0026 chmod +x /app/start.sh
+
+# Change ownership of the app directory to the non-root user
+RUN chown -R appuser:appuser /app
+
+# Switch to the non-root user
+USER 10001
 
 # Expose only the frontend port
 EXPOSE 3000
