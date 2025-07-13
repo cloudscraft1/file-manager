@@ -25,21 +25,42 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+console.log('Frontend Environment:', {
+  BACKEND_URL,
+  API,
+  NODE_ENV: process.env.NODE_ENV
+});
+
 const FileUploader = ({ onUploadSuccess }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const onDrop = useCallback(async (acceptedFiles) => {
+    console.log('onDrop triggered with files:', acceptedFiles);
     const file = acceptedFiles[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+
+    console.log('File selected:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+
+    console.log('Upload URL:', `${API}/files/upload`);
+    console.log('Backend URL:', BACKEND_URL);
 
     setUploading(true);
     setUploadProgress(0);
 
     const formData = new FormData();
     formData.append('file', file);
+    console.log('FormData created with file');
 
     try {
+      console.log('Starting upload request...');
       const response = await axios.post(
         `${API}/files/upload`,
         formData,
@@ -51,16 +72,25 @@ const FileUploader = ({ onUploadSuccess }) => {
             const progress = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
             );
+            console.log('Upload progress:', progress + '%');
             setUploadProgress(progress);
           },
         }
       );
 
+      console.log('Upload successful:', response.data);
       onUploadSuccess && onUploadSuccess(response.data);
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Upload failed: ' + error.response?.data?.detail || error.message);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
+      alert('Upload failed: ' + (error.response?.data?.detail || error.message));
     } finally {
+      console.log('Upload finished');
       setUploading(false);
       setUploadProgress(0);
     }

@@ -107,37 +107,63 @@ async def get_status_checks():
 # File management endpoints
 @api_router.post("/files/upload", response_model=FileMetadataResponse)
 async def upload_file(file: UploadFile = File(...)):
+    print(f"Upload request received for file: {file.filename}")
+    print(f"File size: {file.size if hasattr(file, 'size') else 'unknown'}")
+    print(f"Content type: {file.content_type}")
+    
     try:
+        # Debug: Check environment variables at upload time
+        print(f"Checking environment variables during upload:")
+        print(f"APPWRITE_ENDPOINT: {os.getenv('APPWRITE_ENDPOINT')}")
+        print(f"APPWRITE_PROJECT_ID: {os.getenv('APPWRITE_PROJECT_ID')}")
+        print(f"APPWRITE_BUCKET_ID: {os.getenv('APPWRITE_BUCKET_ID')}")
+        print(f"APPWRITE_API_KEY exists: {bool(os.getenv('APPWRITE_API_KEY'))}")
+        
         # Read file content
+        print("Reading file content...")
         file_content = await file.read()
+        print(f"File content read: {len(file_content)} bytes")
         
         # Upload to Appwrite
+        print("Initializing Appwrite storage...")
         storage = init_appwrite()
         file_id = ID.unique()
+        print(f"Generated file ID: {file_id}")
         
         # Use InputFile.from_bytes for Appwrite
+        print("Creating InputFile...")
         input_file = InputFile.from_bytes(file_content, filename=file.filename)
         
+        print("Uploading to Appwrite...")
         result = storage.create_file(
             bucket_id=os.getenv("APPWRITE_BUCKET_ID"),
             file_id=file_id,
             file=input_file
         )
+        print(f"Appwrite upload result: {result}")
         
         # Create metadata
+        print("Creating metadata...")
         metadata = FileMetadata(
             appwrite_file_id=result["$id"],
             original_name=file.filename,
             file_size=result["sizeOriginal"],
             mime_type=file.content_type or "application/octet-stream"
         )
+        print(f"Metadata created: {metadata.dict()}")
         
         # Save metadata to MongoDB
+        print("Saving to MongoDB...")
         result_db = await db.file_metadata.insert_one(metadata.dict())
+        print(f"MongoDB save result: {result_db.inserted_id}")
         
         # Return response
+        print("Upload successful!")
         return FileMetadataResponse(**metadata.dict())
     except Exception as e:
+        print(f"Upload error occurred: {type(e).__name__}: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         logging.error(f"Upload failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
