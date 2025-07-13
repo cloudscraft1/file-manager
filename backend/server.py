@@ -247,8 +247,16 @@ app.include_router(api_router)
 
 # Mount static files for frontend
 static_dir = Path("../frontend/build")
+print(f"Looking for static files at: {static_dir.absolute()}")
+print(f"Static directory exists: {static_dir.exists()}")
 if static_dir.exists():
-    app.mount("/static", StaticFiles(directory=static_dir / "static"), name="static")
+    static_files_path = static_dir / "static"
+    print(f"Static files path: {static_files_path.absolute()}")
+    print(f"Static files directory exists: {static_files_path.exists()}")
+    if static_files_path.exists():
+        app.mount("/static", StaticFiles(directory=static_files_path), name="static")
+    else:
+        print("Warning: Static files directory not found")
     
     # Serve React app for all non-API routes
     from fastapi.responses import FileResponse
