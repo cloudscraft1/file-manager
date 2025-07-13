@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Test script to verify Docker configuration
-echo "🔍 Testing Docker configuration..."
+echo "🔍 Testing Docker configuration with Node.js 20..."
 
 # Build the image
 echo "📦 Building Docker image..."

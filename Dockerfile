@@ -1,5 +1,5 @@
 # Multi-stage build for React frontend and FastAPI backend
-FROM node:18-alpine AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 
 # Set working directory for frontend
 WORKDIR /app/frontend
@@ -25,7 +25,7 @@ FROM python:3.11-slim
 # Install Node.js and npm (for serving the frontend)
 RUN apt-get update && apt-get install -y \
     curl \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 

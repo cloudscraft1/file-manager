@@ -6,6 +6,7 @@ This setup allows you to run both the React frontend and FastAPI backend in a si
 
 - Docker installed on your system
 - Docker Compose (optional, for easier management)
+- Node.js 20+ (for local development)
 
 ## Quick Start
 
@@ -94,7 +95,8 @@ For development, you can:
 1. **Port conflicts**: Make sure port 3000 is not being used by other applications
 2. **Environment variables**: Ensure all required environment variables are set correctly
 3. **Build failures**: Check that all dependencies are correctly specified in package.json and requirements.txt
-4. **Backend connectivity**: The frontend is configured to use localhost:8000 for backend API calls
+4. **Node.js version**: The frontend requires Node.js 20+ due to react-router-dom@7.5.1. The Docker build uses Node.js 20 automatically
+5. **Backend connectivity**: The frontend is configured to use localhost:8000 for backend API calls
 
 ## Stopping the Container
 
