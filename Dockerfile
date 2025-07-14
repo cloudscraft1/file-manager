@@ -59,7 +59,7 @@ COPY <<EOF /app/start.sh
 export PYTHONPATH=/app/backend
 
 # Start the FastAPI backend
-cd /app/backend && python -m uvicorn server:app --host 0.0.0.0 --port 3000 --root-path /api
+cd /app && python -m uvicorn backend.server:app --host 0.0.0.0 --port 3000
 EOF
 
 # Make the startup script executable
